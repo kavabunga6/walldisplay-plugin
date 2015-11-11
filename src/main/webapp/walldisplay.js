@@ -10,11 +10,11 @@ function getQueueDivs(jobWidth, jobHeight, queuePosition){
     var queueColumns = Math.ceil(queuePosition / perColumn);
 
     var maxQueueItems = maxQueuePositionToShow;
-	
-	if (maxQueuePositionToShow <= 0) {
-		maxQueueItems = maxQueuePositionToShowDefault;
-	}
-	
+    
+    if (maxQueuePositionToShow <= 0) {
+        maxQueueItems = maxQueuePositionToShowDefault;
+    }
+    
     if(queuePosition > maxQueueItems){
         queuePosition = maxQueueItems;
     }
@@ -120,12 +120,8 @@ function blink(objs){
     });
 }
 
-function jobHasColor(job) {
-    return typeof job.color !== "undefined"
-}
-
 function isJobBuilding(job) {
-    return jobHasColor(job) && job.color.substr(-6) === "_anime";
+    return job.color.substr(-6) === "_anime";    
 }
 
 function jobHasHealthReport(job) {
@@ -209,7 +205,7 @@ function repaint(){
                         var isBuilding = isJobBuilding(job);
                         var jobColor = job.color;
 
-                        if(isBuilding){
+                        if(job.color.substr(-6) === "_anime"){
                             jobColor = job.color.substr(0, job.color.length - 6);
                         }
 
@@ -281,20 +277,16 @@ function repaint(){
                               isJunitInUse = true;
                             }
                           });
-                          // if Junit is not in use we want to center the name into the wall
-                          // otherwise we don't center so that the 2 lines can be properly displayed
-                          if(!isJunitInUse || !showJunitResults)
-                          {
-								jobContent.css({
-									"position": "absolute",
-									"top": Math.round((jobHeight - textDimensions.height) / 2) + 'px'
-								});
-                          }
+                         jobContent.css({
+                            "position": "absolute",
+                            "top": Math.round((jobHeight - textDimensions.height) / 9) + 'px'
+                         });
+                          
                         }
                         jobContent.addClass("job_content");
                         jobContent.css(jobDimensionsStyle);
                         jobContent.html(getJobText(job, showBuildNumber, showLastStableTimeAgo, showDetails, showJunitResults));
-
+               
                         // - create the job wrapper div ---------------------
                         var jobWrapper = $('<div />').attr({
                             "id": job.name
@@ -305,7 +297,7 @@ function repaint(){
                         }
 
                         jobWrapper.css({
-                            "font-size": (maxFontSize - 1) + "px",
+                            "font-size": Math.floor((maxFontSize - 1) * .8) + "px",
                         });
 
                         jobWrapper.css(jobPositionStyle);
@@ -423,13 +415,13 @@ function getJobs(jobNames){
 
                     $
                         .ajax({
-                            url: jenkinsUrl + "/job/" + jobName + "/api/json",
+                            url: jenkinsUrl + "/job/" + jobName + "/api/json?depth=2",
                             dataType: "json",
                             data: {
                                 "tree": "displayName,healthReport[score],property[wallDisplayName,wallDisplayBgPicture],name,color,priority,lastStableBuild[timestamp]," +
-                                "lastBuild[number,timestamp,duration,actions[parameters[name,value],claimed,claimedBy,reason,failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +     
-                                "lastCompletedBuild[number,timestamp,duration,actions[parameters[name,value],claimed,claimedBy,reason, failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +                               
-                                		"lastSuccessfulBuild[duration]"
+                                "lastBuild[number,timestamp,duration,actions[parameters[name,value],foundFailureCauses[description],claimed,claimedBy,reason,failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +     
+                                "lastCompletedBuild[number,timestamp,duration,actions[parameters[name,value],foundFailureCauses[description],claimed,claimedBy,reason, failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +                               
+                                        "lastSuccessfulBuild[duration]"
                             },
                             success: function(job, textStatus, jqXHR){
 
@@ -445,7 +437,7 @@ function getJobs(jobNames){
 
                                 var jobFilteredOut = false;
 
-                                if(!jobHasColor(job) || (!showDisabledBuilds && job.color === 'disabled')){
+                                if(!showDisabledBuilds && job.color === 'disabled'){
                                     add = false;
                                     jobFilteredOut = true;
                                 }
@@ -499,9 +491,9 @@ function getJobs(jobNames){
                                     if(sortOrder == "job status"){
                                         sort = jobStatusOrder[job1.color] - jobStatusOrder[job2.color];
                                     } else if (sortOrder == "job priority")
-									{
+                                    {
                                         sort = job1.priority - job2.priority;
-									}
+                                    }
 
                                     if(sort == 0){
                                         sort = getJobText(job1, showBuildNumber, showLastStableTimeAgo, showDetails, showJunitResults)
@@ -569,7 +561,7 @@ function showJobinfo(job){
         
         var url = jenkinsUrl + "/view/" + viewName + "/job/" + job.name;
 
-        jobInfoDiv.append($('<h1 />').append($('<a />', {href: url, text: getJobTitle(job) })));
+        jobInfoDiv.append($('<h />').append($('<a />', {href: url, text: getJobTitle(job, showBuildNumber) })));
         
         if (job.lastStableBuild && job.lastBuild.color != "blue"){   
             jobInfoDiv.append($('<p />')
@@ -599,7 +591,7 @@ function showJobinfo(job){
 
 function addBuildDetails(jobInfoDiv, build, buildType, url){
     if(build != null){
-        jobInfoDiv.append($('<h2 />').append($('<a />', {href: url + "/" +build.number, text: buildType })));
+        jobInfoDiv.append($('<h1 />').append($('<a />', {href: url + "/" +build.number, text: buildType })));
 
         if (build.culprits && build.culprits.length) {
             var culprits =  "Culprits: ";
@@ -790,11 +782,11 @@ function getPluginConfiguration(jenkinsUrl){
                     showBuildNumber = getParameterByName('showBuildNumber', plugin.config.showBuildNumber);
                 }
 
-				if(plugin.config.showJunitResults != null){
+                if(plugin.config.showJunitResults != null){
                     showJunitResults = getParameterByName('showJunitResults', plugin.config.showJunitResults);
                 }
                 
-				if(plugin.config.maxQueuePositionToShow != null){
+                if(plugin.config.maxQueuePositionToShow != null){
                     maxQueuePositionToShow = getParameterByName('maxQueuePositionToShow', plugin.config.maxQueuePositionToShow);
                 }
 
@@ -868,7 +860,7 @@ function getPluginConfiguration(jenkinsUrl){
             
             if (customTheme)
             {
-				$("#customThemeStyling").remove();
+                $("#customThemeStyling").remove();
                 $("head").append("<style id='customThemeStyling' type=\"text/css\">" + customTheme + "</style>");
             }
             
