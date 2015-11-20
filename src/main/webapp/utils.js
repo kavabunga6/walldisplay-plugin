@@ -126,7 +126,7 @@ function getJobTitle(job, showBuildNumber) {
         });
     }
     
-    return jobTitle += "<small>" + getJobBuildNumber(job, showBuildNumber) + getJobProperty(job) + "</small>"; 
+    return jobTitle += "<small>" + getJobBuildNumber(job, showBuildNumber) + " (" +  getJobProperty(job) + ")</small>";
 }
 
 function getJobProperty(job) {
@@ -135,9 +135,9 @@ function getJobProperty(job) {
 	
 	 if (job.lastBuild != null && job.lastBuild.actions != null) {
         $.each(job.lastBuild.actions, function(index, action) {
-            var params = action.parameters;
+            var params = action.lastBuiltRevision;
             if(params != null) {
-				jobProperty = " (" + params[0].value + ") ";
+				jobProperty = params.branch[0].name.replace(new RegExp(".*/",''), '');
 				return false;
 			}
         });
@@ -161,15 +161,19 @@ function getJobFailureCause(job) {
     
     var failureCause = '';
     
-    if (job.lastBuild != null && job.lastBuild.actions != null) {
-        $.each(job.lastBuild.actions, function(index, action) {
-            var failureCauses = action.foundFailureCauses;
-            if (failureCauses != null && failureCauses[0].description != ("Tests failed!")) {
-                failureCause = "<br>(" + failureCauses[0].description + ")";
-                return false;
-            }
-        });
-    }
+   if (job.lastBuild != null && job.lastBuild.actions != null) {
+           $.each(job.lastBuild.actions, function(index, action) {
+               var failureCauses = action.foundFailureCauses;
+               if (failureCauses !== undefined) {
+                   $.each(failureCauses, function(index, cause) {
+                       if (cause.description !== undefined && cause.description !== "Tests failed!") {
+                           failureCause = "<small>(" + cause.description + ")</small>";
+                           return false;
+                       }
+                   });
+               }
+           });
+       }
 
     return failureCause;
 }
@@ -212,9 +216,9 @@ function getJobText(job, showBuildNumber, showLastStableTimeAgo, showDetails, sh
 
     if (showJunitResults && getJobFailureCause(job) == '') {
         jobText += getJunitResults(job) ;
-    }else if (showJunitResults && getJobFailureCause(job) != ''){
+    }else if (showJunitResults && getJobFailureCause(job) !== ''){
 		jobText += getJobFailureCause(job) ;
-	} else if (!showJunitResults && getJobFailureCause(job) != ''){
+	} else if (!showJunitResults && getJobFailureCause(job) !== ''){
 	    jobText += getJobFailureCause(job);	
 	}
 	

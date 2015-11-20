@@ -246,7 +246,7 @@ function repaint(){
                             percentageDiv.addClass("job");
                         }
 
-                        var queueDivs = getQueueDivs(jobWidth, jobHeight, getBuildQueuePosition(job.name));
+                        var queueDivs = getQueueDivs(jobWidth/5.5, jobHeight/3.5, getBuildQueuePosition(job.name));
 
                         // - create the gravatar img ------------------------
                         if(!jobGravatarCache[job.name] || gravatarCounter[job.name] >= 5){
@@ -419,8 +419,8 @@ function getJobs(jobNames){
                             dataType: "json",
                             data: {
                                 "tree": "displayName,healthReport[score],property[wallDisplayName,wallDisplayBgPicture],name,color,priority,lastStableBuild[timestamp]," +
-                                "lastBuild[number,timestamp,duration,actions[parameters[name,value],foundFailureCauses[description],claimed,claimedBy,reason,failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +     
-                                "lastCompletedBuild[number,timestamp,duration,actions[parameters[name,value],foundFailureCauses[description],claimed,claimedBy,reason, failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +                               
+                                "lastBuild[number,timestamp,duration,actions[lastBuiltRevision[branch[name]],foundFailureCauses[description],claimed,claimedBy,reason,failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +
+                                "lastCompletedBuild[number,timestamp,duration,actions[lastBuiltRevision[branch[name]],foundFailureCauses[description],claimed,claimedBy,reason, failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +
                                         "lastSuccessfulBuild[duration]"
                             },
                             success: function(job, textStatus, jqXHR){
