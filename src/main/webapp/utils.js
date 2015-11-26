@@ -137,7 +137,7 @@ function getJobProperty(job) {
         $.each(job.lastBuild.actions, function(index, action) {
             var params = action.lastBuiltRevision;
             if(params != null) {
-				jobProperty = params.branch[0].name.replace(new RegExp(".*/",''), '');
+				jobProperty = params.branch[0].name.replace(new RegExp(".*/"), '').replace(new RegExp("(IMA-[0-9]+)-.*"), '$1');
 				return false;
 			}
         });
@@ -217,9 +217,9 @@ function getJobText(job, showBuildNumber, showLastStableTimeAgo, showDetails, sh
     if (showJunitResults && getJobFailureCause(job) == '') {
         jobText += getJunitResults(job) ;
     }else if (showJunitResults && getJobFailureCause(job) !== ''){
-		jobText += getJobFailureCause(job) ;
+		jobText += "<br>" + getJobFailureCause(job) ;
 	} else if (!showJunitResults && getJobFailureCause(job) !== ''){
-	    jobText += getJobFailureCause(job);	
+	    jobText += "<br>" + getJobFailureCause(job);
 	}
 	
     var appendText = new Array();
@@ -229,7 +229,7 @@ function getJobText(job, showBuildNumber, showLastStableTimeAgo, showDetails, sh
         var claimer = getClaimer(job);
         if (showLastStableTimeAgo && job.lastBuild != null && job.lastBuild.timestamp != null) {
                 appendText.push($.timeago(job.lastBuild.timestamp));
-                appendText.push(culprit.fullName);
+                //appendText.push(culprit.fullName);
             }
         
         if(appendText.length > 0) {
