@@ -229,8 +229,10 @@ function getJobText(job, showBuildNumber, showLastStableTimeAgo, showDetails, sh
         var claimer = getClaimer(job);
         if (showLastStableTimeAgo && job.lastBuild != null && job.lastBuild.timestamp != null) {
                 appendText.push($.timeago(job.lastBuild.timestamp));
-                //appendText.push(culprit.fullName);
             }
+        if(getDescription(job)!=null){
+        appendText.push("Build " + getDescription(job));
+        }
         
         if(appendText.length > 0) {
             jobText += "<br/><small>" + appendText.join("<br>") + "</small>";
@@ -241,12 +243,17 @@ function getJobText(job, showBuildNumber, showLastStableTimeAgo, showDetails, sh
 }
 
 function getGravatarUrl(job, showGravatar, size, gravatarUrl) {
-    if(showGravatar && getEmail(job) !== "") {
-        var hash = CryptoJS.MD5(getEmail(job).toLowerCase());
+     if(showGravatar && getEmail(job) !== "") {
+         var hash = CryptoJS.MD5(getEmail(job).toLowerCase());
 
-        return (gravatarUrl != null && gravatarUrl != "" ? gravatarUrl : "http://www.gravatar.com/avatar/") + hash + "?s=" + size;
-    }
-}
+         return (gravatarUrl != null && gravatarUrl != "" ? gravatarUrl : "http://www.gravatar.com/avatar/") + hash + "?s=" + size;
+     }
+ }
+
+ function getDescription(job) {
+     return job.lastBuild.description;
+ }
+
 function getEmail(job) {
     var email = "";
 

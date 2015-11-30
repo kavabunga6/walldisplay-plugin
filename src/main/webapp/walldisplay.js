@@ -419,8 +419,8 @@ function getJobs(jobNames){
                             dataType: "json",
                             data: {
                                 "tree": "displayName,healthReport[score],property[wallDisplayName,wallDisplayBgPicture],name,color,priority,lastStableBuild[timestamp]," +
-                                "lastBuild[number,timestamp,duration,actions[lastBuiltRevision[branch[name]],foundFailureCauses[description],claimed,claimedBy,reason,failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +
-                                "lastCompletedBuild[number,timestamp,duration,actions[lastBuiltRevision[branch[name]],foundFailureCauses[description],claimed,claimedBy,reason, failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +
+                                "lastBuild[description,number,timestamp,duration,actions[lastBuiltRevision[branch[name]],foundFailureCauses[description],claimed,claimedBy,reason,failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +
+                                "lastCompletedBuild[description,number,timestamp,duration,actions[lastBuiltRevision[branch[name]],foundFailureCauses[description],claimed,claimedBy,reason, failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +
                                         "lastSuccessfulBuild[duration]"
                             },
                             success: function(job, textStatus, jqXHR){
