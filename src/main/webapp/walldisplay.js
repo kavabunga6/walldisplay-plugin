@@ -420,7 +420,7 @@ function getJobs(jobNames){
                             data: {
                                 "tree": "displayName,healthReport[score],property[wallDisplayName,wallDisplayBgPicture],name,color,priority,lastStableBuild[timestamp]," +
                                 "lastBuild[description,number,timestamp,duration,actions[lastBuiltRevision[branch[name]],foundFailureCauses[description],claimed,claimedBy,reason,failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +
-                                "lastCompletedBuild[description,number,timestamp,duration,actions[lastBuiltRevision[branch[name]],foundFailureCauses[description],claimed,claimedBy,reason, failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +
+                                "lastCompletedBuild[description,number,timestamp,duration,actions[lastBuiltRevision[branch[name]],foundFailureCauses[description],claimed,claimedBy,reason,failCount,skipCount,totalCount],culprits[fullName,property[address]]]," +
                                         "lastSuccessfulBuild[duration]"
                             },
                             success: function(job, textStatus, jqXHR){
@@ -575,11 +575,10 @@ function showJobinfo(job){
             if (job.lastSuccessful)
                 jobInfoDiv.append($('<p />').text("Last successful build took " + getUserFriendlyTimespan(serverTime - job.lastSuccessful.duration)));
             // last and last completed will be the same if not building. 
-            addBuildDetails(jobInfoDiv, job.lastBuild, "Currently Building #" + job.lastBuild.number, url);    
-            addBuildDetails(jobInfoDiv, job.lastCompletedBuild, "Last Completed Build #" + job.lastCompletedBuild.number, url);        
+            addBuildDetails(jobInfoDiv, job.lastBuild, "Currently Building #" + job.lastBuild.number, url);
         } 
         else{
-            addBuildDetails(jobInfoDiv, job.lastBuild, "Last Build #" + job.lastBuild.number, url);    
+            addBuildDetails(jobInfoDiv, job.lastBuild, "Last Build #" + job.lastBuild.number, url);
         }        
         jobInfoDiv.click(function(){
             $("#JobInfo").remove();

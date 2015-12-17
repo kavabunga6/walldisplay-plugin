@@ -1,3 +1,6 @@
+function isJobBuilding(job) {
+    return job.color.substr(-6) === "_anime";
+}
 
 function plural(text, count) {
     if (count == 0)
@@ -138,6 +141,7 @@ function getJobProperty(job) {
             var params = action.lastBuiltRevision;
             if(params != null) {
 				jobProperty = params.branch[0].name.replace(new RegExp(".*/"), '').replace(new RegExp("(IMA-[0-9]+)-.*"), '$1');
+				jobProperty = jobProperty.substr(0, Math.min(jobProperty.length, 10))
 				return false;
 			}
         });
@@ -195,9 +199,14 @@ String.format = function() {
 
 function getJunitResults(job)
 {
-  lastBuild = job.lastBuild
-  jobActions = lastBuild.actions
-  appendText=""
+    if(isJobBuilding(job)){
+       var lastBuild = job.lastCompletedBuild
+    }else {
+       var lastBuild = job.lastBuild
+    }
+  var jobActions = lastBuild.actions
+  var appendText=" "
+
   $.each(jobActions, function(actionIndex, action){
     if(action && action.totalCount){
       template = "<br/><small>{0} tests, {2} failed</small>"
